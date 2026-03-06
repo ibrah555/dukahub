@@ -8,6 +8,8 @@ const productSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     comparePrice: { type: Number, default: 0 },
     images: [{ type: String }],
+    sizes: [{ type: String }],
+    colors: [{ type: String }],
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
     stock: { type: Number, required: true, default: 0 },
     brand: { type: String, default: '' },

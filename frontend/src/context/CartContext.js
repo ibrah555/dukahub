@@ -16,21 +16,32 @@ export function CartProvider({ children }) {
         localStorage.setItem('dukahub_cart', JSON.stringify(items));
     }, [items]);
 
-    const addItem = (product, qty = 1) => {
+    const addItem = (product, qty = 1, size = '', color = '') => {
         setItems(prev => {
-            const existing = prev.find(i => i._id === product._id);
+            const existing = prev.find(i => i._id === product._id && i.size === size && i.color === color);
             if (existing) {
-                return prev.map(i => i._id === product._id ? { ...i, qty: i.qty + qty } : i);
+                return prev.map(i => (i._id === product._id && i.size === size && i.color === color) ? { ...i, qty: i.qty + qty } : i);
             }
-            return [...prev, { _id: product._id, name: product.name, price: product.price, image: product.images?.[0] || '', slug: product.slug, qty }];
+            return [...prev, {
+                _id: product._id,
+                name: product.name,
+                price: product.price,
+                image: product.images?.[0] || '',
+                slug: product.slug,
+                qty,
+                size,
+                color
+            }];
         });
     };
 
-    const removeItem = (id) => setItems(prev => prev.filter(i => i._id !== id));
+    const removeItem = (id, size = '', color = '') => {
+        setItems(prev => prev.filter(i => !(i._id === id && i.size === size && i.color === color)));
+    };
 
-    const updateQty = (id, qty) => {
-        if (qty < 1) return removeItem(id);
-        setItems(prev => prev.map(i => i._id === id ? { ...i, qty } : i));
+    const updateQty = (id, qty, size = '', color = '') => {
+        if (qty < 1) return removeItem(id, size, color);
+        setItems(prev => prev.map(i => (i._id === id && i.size === size && i.color === color) ? { ...i, qty } : i));
     };
 
     const clearCart = () => { setItems([]); setDiscount(null); };

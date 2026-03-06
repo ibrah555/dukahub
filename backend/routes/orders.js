@@ -64,9 +64,24 @@ router.get('/my', protect, async (req, res) => {
 // GET /api/orders — admin: all orders
 router.get('/', protect, admin, async (req, res) => {
     try {
-        const { status, page = 1, limit = 20 } = req.query;
+        const { status, date, page = 1, limit = 20 } = req.query;
         let filter = {};
         if (status) filter.status = status;
+
+        if (date) {
+            // Filter by the entire selected day
+            const startDate = new Date(date);
+            startDate.setHours(0, 0, 0, 0);
+
+            const endDate = new Date(date);
+            endDate.setHours(23, 59, 59, 999);
+
+            filter.createdAt = {
+                $gte: startDate,
+                $lte: endDate
+            };
+        }
+
         const total = await Order.countDocuments(filter);
         const orders = await Order.find(filter)
             .populate('user', 'name email phone')

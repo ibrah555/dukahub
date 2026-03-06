@@ -6,14 +6,18 @@ export default function AdminOrdersPage() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('');
+    const [dateFilter, setDateFilter] = useState('');
 
     const loadOrders = () => {
         setLoading(true);
-        const params = statusFilter ? `status=${statusFilter}` : '';
-        api.getOrders(params).then(d => setOrders(d.orders || [])).catch(() => { }).finally(() => setLoading(false));
+        const params = new URLSearchParams();
+        if (statusFilter) params.append('status', statusFilter);
+        if (dateFilter) params.append('date', dateFilter);
+
+        api.getOrders(params.toString()).then(d => setOrders(d.orders || [])).catch(() => { }).finally(() => setLoading(false));
     };
 
-    useEffect(() => { loadOrders(); }, [statusFilter]);
+    useEffect(() => { loadOrders(); }, [statusFilter, dateFilter]);
 
     const updateStatus = async (id, status) => {
         try { await api.updateOrderStatus(id, { status }); loadOrders(); } catch (err) { alert(err.message); }
@@ -25,13 +29,29 @@ export default function AdminOrdersPage() {
         <div className="animate-fadeIn">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
-                <div className="flex gap-2">
-                    {['', 'Pending', 'Processing', 'Delivered', 'Cancelled'].map(s => (
-                        <button key={s} onClick={() => setStatusFilter(s)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${statusFilter === s ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                            {s || 'All'}
-                        </button>
-                    ))}
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="date"
+                            value={dateFilter}
+                            onChange={(e) => setDateFilter(e.target.value)}
+                            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-primary-500 text-gray-600 font-medium"
+                        />
+                        {dateFilter && (
+                            <button onClick={() => setDateFilter('')} className="text-xs text-gray-400 hover:text-red-500 hover:underline">
+                                Clear
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="flex gap-2">
+                        {['', 'Pending', 'Processing', 'Delivered', 'Cancelled'].map(s => (
+                            <button key={s} onClick={() => setStatusFilter(s)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${statusFilter === s ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                                {s || 'All'}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 

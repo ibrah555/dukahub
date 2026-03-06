@@ -61,7 +61,7 @@ const seed = async () => {
     console.log('Created users');
 
     // Create categories
-    const categories = await Category.insertMany([
+    const mainCategories = await Category.insertMany([
         { name: 'Electronics', slug: 'electronics', description: 'Laptops, TVs, cameras and more' },
         { name: 'Phones & Tablets', slug: 'phones-tablets', description: 'Smartphones, tablets and accessories' },
         { name: 'Fashion', slug: 'fashion', description: 'Clothing, shoes, bags and accessories' },
@@ -70,9 +70,17 @@ const seed = async () => {
         { name: 'Health & Beauty', slug: 'health-beauty', description: 'Skincare, makeup and wellness products' },
     ]);
 
+    const fashionId = mainCategories.find(c => c.name === 'Fashion')._id;
+
+    const subCategories = await Category.insertMany([
+        { name: "Men's Clothing", slug: 'mens-clothing', description: 'Shirts, trousers, jackets for men', parent: fashionId },
+        { name: "Women's Clothing", slug: 'womens-clothing', description: 'Dresses, tops, skirts for women', parent: fashionId },
+    ]);
+
+    const categories = [...mainCategories, ...subCategories];
     const catMap = {};
     categories.forEach(c => { catMap[c.name] = c._id; });
-    console.log('Created categories');
+    console.log('Created categories and subcategories');
 
     // Create products
     const products = await Product.create([
@@ -84,12 +92,48 @@ const seed = async () => {
         // Phones & Tablets
         { name: 'iPhone 15 Pro Max', slug: 'iphone-15-pro-max-' + Date.now().toString(36), description: 'Apple iPhone 15 Pro Max 256GB. Titanium design, A17 Pro chip, 48MP camera system, USB-C. The most powerful iPhone ever.', price: 189999, comparePrice: 210000, category: catMap['Phones & Tablets'], stock: 10, brand: 'Apple', featured: true, rating: 4.9, reviewCount: 67, images: [] },
         { name: 'Samsung Galaxy S24 Ultra', slug: 'samsung-galaxy-s24-ultra-' + Date.now().toString(36), description: 'Samsung Galaxy S24 Ultra 256GB with S Pen. AI-powered features, 200MP camera, titanium frame, and Snapdragon 8 Gen 3.', price: 169999, comparePrice: 185000, category: catMap['Phones & Tablets'], stock: 12, brand: 'Samsung', featured: true, rating: 4.7, reviewCount: 38, images: [] },
-        { name: 'Tecno Camon 20 Pro', slug: 'tecno-camon-20-pro-' + Date.now().toString(36), description: 'Tecno Camon 20 Pro 5G with 64MP camera, 8GB RAM, 256GB storage. Great value smartphone for photography enthusiasts.', price: 32999, comparePrice: 38000, category: catMap['Phones & Tablets'], stock: 25, brand: 'Tecno', featured: false, rating: 4.2, reviewCount: 29, images: [] },
 
-        // Fashion
-        { name: 'Men\'s Classic Leather Jacket', slug: 'mens-classic-leather-jacket-' + Date.now().toString(36), description: 'Premium genuine leather jacket for men. Classic biker style with zipped pockets. Available in black and brown.', price: 8999, comparePrice: 12999, category: catMap['Fashion'], stock: 30, brand: 'Urban Style', featured: false, rating: 4.4, reviewCount: 15, images: [] },
-        { name: 'Women\'s Ankara Maxi Dress', slug: 'womens-ankara-maxi-dress-' + Date.now().toString(36), description: 'Beautiful African print Ankara maxi dress. Vibrant colors, comfortable fit, perfect for special occasions. Made in Kenya.', price: 3499, comparePrice: 4999, category: catMap['Fashion'], stock: 50, brand: 'Nairobae Fashion', featured: true, rating: 4.6, reviewCount: 42, images: [] },
-        { name: 'Nike Air Force 1 Sneakers', slug: 'nike-air-force-1-sneakers-' + Date.now().toString(36), description: 'Nike Air Force 1 classic white sneakers. Timeless design, premium leather, and Air cushioning for all-day comfort.', price: 14999, comparePrice: 18000, category: catMap['Fashion'], stock: 20, brand: 'Nike', featured: false, rating: 4.7, reviewCount: 56, images: [] },
+        // Fashion - Men's
+        {
+            name: "Men's Classic Leather Jacket",
+            slug: 'mens-classic-leather-jacket-' + Date.now().toString(36),
+            description: 'Premium genuine leather jacket for men. Classic biker style with zipped pockets. Available in black and brown.',
+            price: 8999,
+            comparePrice: 12999,
+            category: catMap["Men's Clothing"],
+            stock: 30,
+            brand: 'Urban Style',
+            featured: false,
+            rating: 4.4,
+            reviewCount: 15,
+            sizes: ['M', 'L', 'XL'],
+            colors: ['Black', 'Brown'],
+            images: [
+                'https://images.unsplash.com/photo-1521223890158-f9f7c3d5d5ec?q=80&w=600&h=600&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=600&h=600&auto=format&fit=crop'
+            ]
+        },
+        // Fashion - Women's
+        {
+            name: "Women's Ankara Maxi Dress",
+            slug: 'womens-ankara-maxi-dress-' + Date.now().toString(36),
+            description: 'Beautiful African print Ankara maxi dress. Vibrant colors, comfortable fit, perfect for special occasions. Made in Kenya.',
+            price: 3499,
+            comparePrice: 4999,
+            category: catMap["Women's Clothing"],
+            stock: 50,
+            brand: 'Nairobae Fashion',
+            featured: true,
+            rating: 4.6,
+            reviewCount: 42,
+            sizes: ['S', 'M', 'L'],
+            colors: ['Blue/Red', 'Green/Yellow'],
+            images: [
+                'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&h=600&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=600&h=600&auto=format&fit=crop'
+            ]
+        },
+        { name: 'Nike Air Force 1 Sneakers', slug: 'nike-air-force-1-sneakers-' + Date.now().toString(36), description: 'Nike Air Force 1 classic white sneakers. Timeless design, premium leather, and Air cushioning for all-day comfort.', price: 14999, comparePrice: 18000, category: catMap['Fashion'], stock: 20, brand: 'Nike', featured: false, rating: 4.7, reviewCount: 56, images: [], sizes: ['38', '39', '40', '41', '42'], colors: ['White'] },
 
         // Home & Kitchen
         { name: 'Ramtons 2-Burner Gas Cooker', slug: 'ramtons-2-burner-gas-cooker-' + Date.now().toString(36), description: 'Ramtons 2-burner table-top gas cooker with auto-ignition. Sturdy build, easy to clean, perfect for Kenyan kitchens.', price: 4999, comparePrice: 6500, category: catMap['Home & Kitchen'], stock: 35, brand: 'Ramtons', featured: false, rating: 4.3, reviewCount: 19, images: [] },

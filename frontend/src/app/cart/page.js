@@ -29,20 +29,24 @@ export default function CartPage() {
                     <div className="grid md:grid-cols-3 gap-8">
                         <div className="md:col-span-2 space-y-3">
                             {items.map(item => (
-                                <div key={item._id} className="card p-4 flex gap-4">
+                                <div key={`${item._id}-${item.size}-${item.color}`} className="card p-4 flex gap-4">
                                     <Link href={`/products/${item.slug}`} className="w-24 h-24 bg-gray-50 rounded-xl overflow-hidden shrink-0">
                                         <img src={item.image || placeholder} alt={item.name} className="w-full h-full object-cover" />
                                     </Link>
                                     <div className="flex-1 min-w-0">
-                                        <Link href={`/products/${item.slug}`} className="font-semibold text-sm text-gray-800 hover:text-primary-600 line-clamp-2">{item.name}</Link>
-                                        <p className="text-lg font-bold text-gray-900 mt-1">{formatPrice(item.price)}</p>
-                                        <div className="flex items-center justify-between mt-2">
-                                            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-                                                <button onClick={() => updateQty(item._id, item.qty - 1)} className="p-1.5 hover:bg-gray-50"><FiMinus size={14} /></button>
-                                                <span className="px-3 text-sm font-semibold">{item.qty}</span>
-                                                <button onClick={() => updateQty(item._id, item.qty + 1)} className="p-1.5 hover:bg-gray-50"><FiPlus size={14} /></button>
+                                        <Link href={`/products/${item.slug}`} className="font-semibold text-sm text-gray-800 hover:text-primary-600 line-clamp-1">{item.name}</Link>
+                                        <div className="flex flex-wrap gap-2 mt-1">
+                                            {item.color && <span className="text-[10px] uppercase font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md">Color: {item.color}</span>}
+                                            {item.size && <span className="text-[10px] uppercase font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md">Size: {item.size}</span>}
+                                        </div>
+                                        <p className="text-lg font-bold text-gray-900 mt-2">{formatPrice(item.price)}</p>
+                                        <div className="flex items-center justify-between mt-3">
+                                            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
+                                                <button onClick={() => updateQty(item._id, item.qty - 1, item.size, item.color)} className="p-1.5 hover:bg-gray-50 transition-colors"><FiMinus size={14} /></button>
+                                                <span className="px-3 text-sm font-bold">{item.qty}</span>
+                                                <button onClick={() => updateQty(item._id, item.qty + 1, item.size, item.color)} className="p-1.5 hover:bg-gray-50 transition-colors"><FiPlus size={14} /></button>
                                             </div>
-                                            <button onClick={() => removeItem(item._id)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                            <button onClick={() => removeItem(item._id, item.size, item.color)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Remove item">
                                                 <FiTrash2 size={16} />
                                             </button>
                                         </div>

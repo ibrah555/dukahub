@@ -23,9 +23,7 @@ export default function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 shrink-0">
-                        <div className="w-9 h-9 bg-gradient-to-br from-primary-600 to-accent-500 rounded-xl flex items-center justify-center">
-                            <span className="text-white font-bold text-lg">D</span>
-                        </div>
+                        <img src="/logo.png" alt="DukaHub Logo" className="h-10 w-auto object-contain" />
                         <span className="text-xl font-bold bg-gradient-to-r from-primary-700 to-primary-500 bg-clip-text text-transparent hidden sm:block">DukaHub</span>
                     </Link>
 

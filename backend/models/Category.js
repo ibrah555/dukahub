@@ -6,6 +6,7 @@ const categorySchema = new mongoose.Schema({
     slug: { type: String, unique: true },
     description: { type: String, default: '' },
     image: { type: String, default: '' },
+    parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
 }, { timestamps: true });
 
 categorySchema.pre('save', function (next) {

@@ -7,7 +7,7 @@ const upload = require('../middleware/upload');
 // GET /api/categories
 router.get('/', async (req, res) => {
     try {
-        const categories = await Category.find().sort('name');
+        const categories = await Category.find().populate('parent', 'name').sort('name');
         res.json(categories);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -28,9 +28,14 @@ router.get('/:slug', async (req, res) => {
 // POST /api/categories — admin
 router.post('/', protect, admin, upload.single('image'), async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, description, parent } = req.body;
         const image = req.file ? `/uploads/${req.file.filename}` : '';
-        const category = await Category.create({ name, description, image });
+        const category = await Category.create({
+            name,
+            description,
+            image,
+            parent: parent || null
+        });
         res.status(201).json(category);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -44,6 +49,7 @@ router.put('/:id', protect, admin, upload.single('image'), async (req, res) => {
         if (!category) return res.status(404).json({ message: 'Category not found' });
         category.name = req.body.name || category.name;
         category.description = req.body.description || category.description;
+        category.parent = req.body.parent !== undefined ? req.body.parent : category.parent;
         if (req.file) category.image = `/uploads/${req.file.filename}`;
         const updated = await category.save();
         res.json(updated);

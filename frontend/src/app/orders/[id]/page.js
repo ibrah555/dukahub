@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -8,7 +8,7 @@ import { api, formatPrice } from '@/lib/api';
 import { FiCheckCircle, FiClock, FiTruck, FiPackage, FiXCircle } from 'react-icons/fi';
 
 export default function OrderDetailPage({ params }) {
-    const { id } = use(params);
+    const { id } = params;
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [order, setOrder] = useState(null);
